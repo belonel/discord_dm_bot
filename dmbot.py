@@ -13,4 +13,4 @@ async def DM(ctx, user: discord.User, *, message=None):
     message = message or "This Message is sent via DM"
     await user.send(message)
 
-bot.run('Nzg5MDAxMTI2ODMzNDIyMzY3.X9rsjw' + '.b4UWnvN5O50norV3NQN5IcYsadQ')
+bot.run('token')
