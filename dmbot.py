@@ -3,7 +3,7 @@ import discord
 import os
 
 from boto.s3.connection import S3Connection
-token = S3Connection(os.environ['D_TOKEN'])
+token = S3Connection(os.environ['TOKEN'])
 
 
 bot = commands.Bot(command_prefix='!')
