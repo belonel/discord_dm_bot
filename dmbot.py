@@ -4,14 +4,13 @@ from boto.s3.connection import S3Connection
 import os
 
 token = S3Connection(os.environ['D_KEY'], os.environ['A_KEY'])
-print(f'type = {type(token.access_key)}, access_key = {token.access_key}')
-print(f'type = {type(token.secret_key)}, secret_key = {token.secret_key}')
+DISCORD_BOT_TOKEN = token.access_key
 
-# bot = commands.Bot(command_prefix='!')
+bot = commands.Bot(command_prefix='!')
 
-# @bot.command()
-# async def DM(ctx, user: discord.User, *, message=None):
-#     message = message or "This Message is sent via DM"
-#     await user.send(message)
+@bot.command()
+async def DM(ctx, user: discord.User, *, message=None):
+    message = message or "This Message is sent via DM"
+    await user.send(message)
 
-# bot.run('token')
+bot.run(DISCORD_BOT_TOKEN)
