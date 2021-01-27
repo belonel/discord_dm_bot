@@ -211,8 +211,8 @@ def handle_push():
     print("Request dictionary: {}".format(request.json))
 
     data = json.loads(request.data.decode("utf-8"))
-    if data['email'] != None and data['stripe_cust_id'] != None \
-            and data['created_at'] != None and data['invite_code'] != None:
+    # if data['email'] != None and data['stripe_cust_id'] != None \
+            # and data['created_at'] != None and data['invite_code'] != None:
         # save_email(data['email'], data['stripe_cust_id'], data['invite_code'], data['created_at'])
     return jsonify({'status': 'ok'}), 200
 
