@@ -1,1 +1,1 @@
-web: python dmbot2.py -p $3456
+web: python dmbot2.py -p 3456
