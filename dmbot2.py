@@ -191,7 +191,8 @@ def bot_run():
 
 def server_run():
     if len(argv) == 2:
-        run(port=int(argv[1]))
+        port = int(os.environ.get("PORT", 5000))
+        run(port=port)
     else:
         run()
 
