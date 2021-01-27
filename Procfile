@@ -1,1 +1,1 @@
-worker: python dmbot.py
+worker: python dmbot2.py
