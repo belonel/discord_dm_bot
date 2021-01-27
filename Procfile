@@ -1,1 +1,1 @@
-worker: python dmbot2.py
+web: gunicorn hello:app
