@@ -3,7 +3,7 @@ import discord
 from boto.s3.connection import S3Connection
 import os
 
-token = S3Connection(os.environ['D_KEY'], os.environ['A_Knt(EY'])
+token = S3Connection(os.environ['D_KEY'], os.environ['A_KEY'])
 print(token)
 print(type(token))
 
