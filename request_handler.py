@@ -29,12 +29,10 @@ class S(BaseHTTPRequestHandler):
             save_email(data['email'], data['stripe_cust_id'], data['invite_code'], data['created_at'])
             self._set_response()
             self.wfile.write("POST request for {} successfully completed".format(self.path).encode('utf-8'))
-            self.wfile.close()
         else:
             print('ERROR request BODY')
             self._set_response()
             self.wfile.write("POST request for {} body error".format(self.path).encode('utf-8'))
-            self.wfile.close()
 
 def run(server_class=HTTPServer, handler_class=S, port=3456):
     logging.basicConfig(level=logging.INFO)
