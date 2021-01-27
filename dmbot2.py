@@ -1,22 +1,21 @@
-# import discord
-# import amplitude_logger
-# from request_handler import run
-# from multiprocessing import Process
-# from sys import argv
+import discord
+import amplitude_logger
+from multiprocessing import Process
+from db_helper import *
 
-# from boto.s3.connection import S3Connection
-# import os
-#
+from boto.s3.connection import S3Connection
+import os
+
 # token = S3Connection(os.environ['D_KEY'], os.environ['A_KEY'])
 # DISCORD_BOT_TOKEN = token.access_key
 # AMPLITUDE_API_KEY = token.secret_key
-#
-# intents = discord.Intents.default()
-# intents.presences = True
-# intents.members = True
-# intents.messages = True
-# intents.guilds = True
-# intents.reactions = True
+
+intents = discord.Intents.default()
+intents.presences = True
+intents.members = True
+intents.messages = True
+intents.guilds = True
+intents.reactions = True
 #
 # client = discord.Client(intents=intents)
 #
@@ -202,8 +201,6 @@
 
 
 from flask import Flask, request, abort, jsonify
-import os
-
 app = Flask(__name__)
 
 @app.route('/', methods=['POST'])
@@ -211,6 +208,11 @@ def handle_push():
     if not request.json:
         abort(400)
     print("Request dictionary: {}".format(request.json))
+
+    data = request.json
+    if data['email'] != None and data['stripe_cust_id'] != None \
+            and data['created_at'] != None and data['invite_code'] != None:
+        save_email(data['email'], data['stripe_cust_id'], data['invite_code'], data['created_at'])
     return jsonify({'status': 'ok'}), 200
 
 if __name__ == '__main__':
