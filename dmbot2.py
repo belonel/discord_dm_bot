@@ -196,7 +196,8 @@ def server_run():
         run()
 
 if __name__ == "__main__":
-    Process(target=server_run).start()
+    server_run()
+    # Process(target=server_run).start()
     # Process(target=bot_run).start()
 
 
