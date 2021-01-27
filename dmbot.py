@@ -6,7 +6,9 @@ import os
 token = S3Connection(os.environ['D_KEY'], os.environ['A_KEY'])
 print(token)
 print(type(token))
-
+print('query_string =', token.QueryString)
+print('access_key =', token.access_key)
+print('secret_key', token.secret_key)
 
 # bot = commands.Bot(command_prefix='!')
 
