@@ -26,7 +26,7 @@ class S(BaseHTTPRequestHandler):
 
         if data['email'] != None and data['stripe_cust_id'] != None \
                 and data['created_at'] != None and data['invite_code'] != None:
-            save_email(data['email'], data['stripe_cust_id'], data['invite_code'], data['created_at'])
+            # save_email(data['email'], data['stripe_cust_id'], data['invite_code'], data['created_at'])
             self._set_response()
             self.wfile.write("POST request for {} successfully completed".format(self.path).encode('utf-8'))
         else:
