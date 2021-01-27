@@ -36,11 +36,12 @@ class S(BaseHTTPRequestHandler):
 
 def run(server_class=HTTPServer, handler_class=S, port=8080):
     logging.basicConfig(level=logging.INFO)
-    server_address = ('/', port)
+    server_address = ('', port)
     httpd = server_class(server_address, handler_class)
     logging.info('Starting httpd...\n')
     print('server_address = ', server_address)
     try:
+        print(httpd.server_address)
         httpd.serve_forever()
     except KeyboardInterrupt:
         pass
