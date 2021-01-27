@@ -1,1 +1,1 @@
-web: gunicorn hello:app
+web: gunicorn dmbot2:app
