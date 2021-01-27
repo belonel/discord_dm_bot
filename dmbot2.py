@@ -2,6 +2,7 @@ import discord
 import amplitude_logger
 from multiprocessing import Process
 from db_helper import *
+import json
 
 from boto.s3.connection import S3Connection
 import os
@@ -209,7 +210,7 @@ def handle_push():
         abort(400)
     print("Request dictionary: {}".format(request.json))
 
-    data = request.json
+    data = json.loads(request.decode('utf-8'))
     if data['email'] != None and data['stripe_cust_id'] != None \
             and data['created_at'] != None and data['invite_code'] != None:
         save_email(data['email'], data['stripe_cust_id'], data['invite_code'], data['created_at'])
