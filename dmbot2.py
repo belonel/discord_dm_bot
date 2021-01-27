@@ -1,28 +1,28 @@
-import discord
-import amplitude_logger
-from request_handler import run
-from multiprocessing import Process
-from sys import argv
+# import discord
+# import amplitude_logger
+# from request_handler import run
+# from multiprocessing import Process
+# from sys import argv
 
-from boto.s3.connection import S3Connection
-import os
-
-token = S3Connection(os.environ['D_KEY'], os.environ['A_KEY'])
-DISCORD_BOT_TOKEN = token.access_key
-AMPLITUDE_API_KEY = token.secret_key
-
-intents = discord.Intents.default()
-intents.presences = True
-intents.members = True
-intents.messages = True
-intents.guilds = True
-intents.reactions = True
-
+# from boto.s3.connection import S3Connection
+# import os
+#
+# token = S3Connection(os.environ['D_KEY'], os.environ['A_KEY'])
+# DISCORD_BOT_TOKEN = token.access_key
+# AMPLITUDE_API_KEY = token.secret_key
+#
+# intents = discord.Intents.default()
+# intents.presences = True
+# intents.members = True
+# intents.messages = True
+# intents.guilds = True
+# intents.reactions = True
+#
 # client = discord.Client(intents=intents)
-
+#
 # # initialize amplitude logger
 # amplitude_logger = amplitude_logger.AmplitudeLogger(api_key=AMPLITUDE_API_KEY)
-
+#
 # @client.event
 # async def on_member_update(before, after):
 #     if before.status != after.status:
@@ -33,7 +33,7 @@ intents.reactions = True
 #             role = roles[0]
 #         else:
 #             role = roles[1]
-
+#
 #         print(f'---> before: {before.status}, after: {after.status}, user_after: {after}, role: {role}')
 #         event_args = {
 #             "user_id": str(after.id),
@@ -53,12 +53,12 @@ intents.reactions = True
 #                     "discord_roles": role,
 #                     "discord_status": str(after.status),
 #                 },
-
+#
 #         }
 #         event = amplitude_logger.create_event(**event_args)
 #         # send event to amplitude
 #         amplitude_logger.log_event(event)
-
+#
 #         if str(before.status) != 'online' and str(after.status) == 'online':
 #             # user bacame online
 #             print('user bacame online')
@@ -69,7 +69,7 @@ intents.reactions = True
 #             event = amplitude_logger.create_event(**event_args)
 #             # send event to amplitude
 #             amplitude_logger.log_event(event)
-
+#
 #         elif str(before.status) != "offline" and str(after.status) == 'offline':
 #             # user bacame offline
 #             print('user bacame offline')
@@ -80,7 +80,7 @@ intents.reactions = True
 #             event = amplitude_logger.create_event(**event_args)
 #             # send event to amplitude
 #             amplitude_logger.log_event(event)
-
+#
 # @client.event
 # async def on_member_join(member):
 #     print(f'joined_at: {member.joined_at}\nusername: {member.display_name}\n'
@@ -99,12 +99,12 @@ intents.reactions = True
 #                 "discord_roles": "Trial",
 #                 "#messages_sent": 0,
 #             },
-
+#
 #     }
 #     event = amplitude_logger.create_event(**event_args)
 #     # send event to amplitude
 #     amplitude_logger.log_event(event)
-
+#
 #     indentify_args = {
 #         "user_id": str(member.id),
 #         "user_properties": {
@@ -118,12 +118,12 @@ intents.reactions = True
 #     }
 #     identify = amplitude_logger.create_ident(**indentify_args)
 #     amplitude_logger.log_ident(identify)
-
-
+#
+#
 # @client.event
 # async def on_message(message):
 #     print(f'Message from {message.author}: {message.content}, channel: {message.channel.name}')
-
+#
 #     event_args = {
 #         "user_id": str(message.author.id),
 #         "event_type": "Message sent",
@@ -140,12 +140,12 @@ intents.reactions = True
 #                 "joined_week_number": str(message.author.joined_at.isocalendar()[1]),
 #                 "joined_weekday": str(message.author.joined_at.isocalendar()[2]),
 #             },
-
+#
 #     }
 #     event = amplitude_logger.create_event(**event_args)
 #     # send event to amplitude
 #     amplitude_logger.log_event(event)
-
+#
 #     indentify_args = {
 #         "user_id": str(message.author.id),
 #         "user_properties": {
@@ -154,15 +154,15 @@ intents.reactions = True
 #     }
 #     identify = amplitude_logger.create_ident(**indentify_args)
 #     amplitude_logger.log_ident(identify)
-
+#
 # @client.event
 # async def on_reaction_add(reaction, user):
 #     emoji = reaction.emoji
 #     print(f'reaction: {emoji}, message: {reaction.message.content}, user: {user.display_name}, author: {reaction.message.author.display_name}')
-
+#
 #     if '<:' in str(emoji):
 #         emoji = str(emoji)
-
+#
 #     event_args = {
 #         "user_id": str(user.id),
 #         "event_type": "Reaction added",
@@ -185,20 +185,37 @@ intents.reactions = True
 #     event = amplitude_logger.create_event(**event_args)
 #     # send event to amplitude
 #     amplitude_logger.log_event(event)
+#
+# def bot_run():
+#     client.run(DISCORD_BOT_TOKEN)
+#
+# def server_run():
+#     if len(argv) == 2:
+#         run(port=int(argv[1]))
+#     else:
+#         run()
+#
+# if __name__ == "__main__":
+#     Process(target=server_run).start()
+#     Process(target=bot_run).start()
+#
 
-def bot_run():
-    client.run(DISCORD_BOT_TOKEN)
 
-def server_run():
-    if len(argv) == 2:
-        port = int(os.environ.get("PORT", 5000))
-        run(port=port)
-    else:
-        run()
+from flask import Flask, request, abort, jsonify
+import os
 
-if __name__ == "__main__":
-    server_run()
-    # Process(target=server_run).start()
-    # Process(target=bot_run).start()
+app = Flask(__name__)
 
+@app.route('/', methods=['POST'])
+def handle_push():
+    if not request.json:
+        abort(400)
+    print("Request dictionary: {}".format(request.json))
+    return jsonify({'status': 'ok'}), 200
 
+if __name__ == '__main__':
+    print("Listening...")
+    port = int(os.environ.get("PORT", 5000))
+    app.run(debug=True, host='0.0.0.0', port=port)
+    # port = int(os.environ.get("PORT", 5000))
+    # app.run(host='0.0.0.0', port=port)
