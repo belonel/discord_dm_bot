@@ -3,6 +3,10 @@ import amplitude_logger
 from multiprocessing import Process
 from db_helper import *
 import json
+import psycopg2
+
+# DATABASE_URL = os.environ['DATABASE_URL']
+DATABASE_URL = "postgres://anjyujjlcqgupd:f4776575e1d67ac5f10612f2af981c55464e6b6a9348f7c8c01666cd73548aa9@ec2-50-19-247-157.compute-1.amazonaws.com:5432/dakhb74dv1ma6f"
 
 from boto.s3.connection import S3Connection
 import os
@@ -209,16 +213,61 @@ def handle_push():
     if not request.json:
         abort(400)
     print("Request dictionary: {}".format(request.json))
-
-    data = json.loads(request.data.decode("utf-8"))
-    # if data['email'] != None and data['stripe_cust_id'] != None \
-            # and data['created_at'] != None and data['invite_code'] != None:
-        # save_email(data['email'], data['stripe_cust_id'], data['invite_code'], data['created_at'])
+    
+    data = request.json
+    if data['email'] != None and data['stripe_cust_id'] != None \
+            and data['created_at'] != None and data['invite_code'] != None:
+        insert_user(data['email'], data['stripe_cust_id'], data['created_at'], data['invite_code'])
     return jsonify({'status': 'ok'}), 200
 
+
+def insert_user(email, stripe_id, created_at, invite_code):
+    try:
+        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+
+        cur = conn.cursor()
+
+        # execute a statement
+        cur.execute(f"INSERT INTO users(email, stripe_cust_id, created_at, invite_code) values('{email}', '{stripe_id}', '{created_at}', '{invite_code}');")
+
+        conn.commit()
+        print('data inserted')
+        # close the communication with the PostgreSQL
+        cur.close()
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if conn is not None:
+            conn.close()
+            print('Database connection closed.')
+
+
+def print_all_users():
+    try:
+        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+
+        cur = conn.cursor()
+
+        # execute a statement
+        print('script result:')
+        cur.execute('SELECT * FROM USERS;')
+
+        result = cur.fetchall()
+        print(result)
+
+        # close the communication with the PostgreSQL
+        cur.close()
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if conn is not None:
+            conn.close()
+            # print('Database connection closed.')
+
 if __name__ == '__main__':
+    # print_all_users()
+
     print("Listening...")
+    # app.run(debug=True, host='0.0.0.0', port=8085)
     port = int(os.environ.get("PORT", 5000))
-    app.run(debug=True, host='0.0.0.0', port=port)
-    # port = int(os.environ.get("PORT", 5000))
-    # app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=port)
