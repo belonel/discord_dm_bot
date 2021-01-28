@@ -18,4 +18,4 @@ if __name__ == '__main__':
     # print_all_users()
     Process(target=server_run).start()
     # server_run()
-    # Process(target=bot_run).start()
+    Process(target=bot_run).start()
