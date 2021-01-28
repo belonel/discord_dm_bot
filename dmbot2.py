@@ -211,6 +211,7 @@ app = Flask(__name__)
 @app.route('/', methods=['POST'])
 def handle_push():
     print(request)
+    print(request.data.decode('utf-8'))
     if not request.json:
         abort(400)
     print("Request dictionary: {}".format(request.json))
