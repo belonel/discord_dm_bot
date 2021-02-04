@@ -54,6 +54,11 @@ def handle_push():
 
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-    new_invite = loop.create_task(create_invite())
+    new_invite = None
+    done = loop.run_until_complete(create_invite())
+    print(done)
+    new_invite = str(done)
+    loop.close()
+
 
     return jsonify({'status': 'ok', 'invite_link': new_invite}), 200
