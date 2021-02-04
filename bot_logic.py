@@ -48,7 +48,7 @@ async def on_ready():
             print('guild: ', guild)
             my_guild = guild
     users = get_all_users()
-    print('my_guild: ', my_guild)
+    print('my_guild: ', my_guild, 'id: ', my_guild.id)
     print(users)
 
 def find_invite_by_code(invite_list, code):
@@ -337,8 +337,8 @@ async def create_invite():
     global my_guild
     print('create invite function')
 
-    print('guild: ', my_guild)
-    print('', my_guild.channels)
+    print('my guild: ', my_guild)
+    # g = await client.fetch_guild('')
 
     for channel in my_guild.channels:
         print('channels cycle', channel)
