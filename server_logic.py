@@ -1,6 +1,8 @@
 from config import *
-import psycopg2
+from db_logic import *
 from flask import Flask, request, abort, jsonify
+from datetime import date
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -13,50 +15,38 @@ def handle_push():
 
     data = request.json
     if data['email'] != None and data['stripe_cust_id'] != None \
-            and data['created_at'] != None and data['invite_code'] != None:
+            and data['created_at'] != None and data['invite_code'] != None \
+            and data['product_name'] != None and data['subs_price'] != None and data['subs_interval'] != None:
         insert_user(data['email'], data['stripe_cust_id'], data['created_at'], data['invite_code'])
+        event_args = {
+            "user_id": str(data['email']),
+            "event_type": "Trial started",
+            "event_properties": {
+                "product_name": data['product_name'],
+                "subscription_price": data['subs_price'],
+                "subscription_interval": data['subs_interval'],
+            },
+            "user_properties": {
+                "discord_invite_code": data['invite_code'],
+            }
+        }
+        event = amplitude_logger.create_event(**event_args)
+        # send event to amplitude
+        amplitude_logger.log_event(event)
+
+        indentify_args = {
+            "user_id": str(data['email']),
+            "user_properties": {
+                "$setOnce": {
+                    "cohort_day_number": datetime.now().timetuple().tm_yday,
+                    "cohort_week_number": date.today().isocalendar()[1],
+                    "cohort_month": datetime.now().timetuple().tm_mon,
+                    "cohort_year": datetime.now().timetuple().tm_year,
+                    "trial_started_at": datetime.now().isoformat(),
+                },
+            }
+        }
+        identify = amplitude_logger.create_ident(**indentify_args)
+        amplitude_logger.log_ident(identify)
+
     return jsonify({'status': 'ok'}), 200
-
-
-def insert_user(email, stripe_id, created_at, invite_code):
-    try:
-        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
-
-        cur = conn.cursor()
-
-        # execute a statement
-        cur.execute(f"INSERT INTO users(email, stripe_cust_id, created_at, invite_code) values('{email}', '{stripe_id}', '{created_at}', '{invite_code}');")
-
-        conn.commit()
-        print('data inserted')
-        # close the communication with the PostgreSQL
-        cur.close()
-    except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
-    finally:
-        if conn is not None:
-            conn.close()
-            print('Database connection closed.')
-
-
-def print_all_users():
-    try:
-        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
-
-        cur = conn.cursor()
-
-        # execute a statement
-        print('script result:')
-        cur.execute('SELECT * FROM USERS;')
-
-        result = cur.fetchall()
-        print(result)
-
-        # close the communication with the PostgreSQL
-        cur.close()
-    except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
-    finally:
-        if conn is not None:
-            conn.close()
-            # print('Database connection closed.')
