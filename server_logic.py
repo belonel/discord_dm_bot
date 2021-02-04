@@ -62,4 +62,4 @@ def handle_push():
     done = client.loop.create_task(create_invite())
 
 
-    return jsonify({'status': 'ok', 'invite_link': done}), 200
+    return jsonify({'status': 'ok', 'invite_link': str(done)}), 200
