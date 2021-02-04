@@ -334,6 +334,7 @@ async def on_reaction_add(reaction, user):
     amplitude_logger.log_event(event)
 
 async def create_invite():
+    global my_guild
     print('create invite function')
 
     print('guild: ', my_guild)
