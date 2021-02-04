@@ -338,9 +338,10 @@ async def create_invite():
     global my_guild
     print('create invite function')
 
-    await client.wait_until_ready()
+    # await client.wait_until_ready()
 
-    g = await client.fetch_guild('741348383951945760')
+    # g = await client.fetch_guild('741348383951945760')
+    g = discord.Object('741348383951945760')
     print('g: ', g)
     print('ch: ', g.channels)
 
