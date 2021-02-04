@@ -11,6 +11,8 @@ intents.reactions = True
 
 client = discord.Client(intents=intents)
 
+my_guild = None
+
 invites = {}
 
 users = []
@@ -36,11 +38,14 @@ def get_email_from_local_by_discord_id(discord_id):
 
 @client.event
 async def on_ready():
+    global my_guild
     print('Bot ready\n')
     # Getting all the guilds our bot is in
     for guild in client.guilds:
         # Adding each guild's invites to our dict
         invites[guild.id] = await guild.invites()
+        if guild.name == "Cindicator's Macro Sentiment":
+            my_guild = guild
     users = get_all_users()
     print(users)
 
@@ -328,18 +333,30 @@ async def on_reaction_add(reaction, user):
 
 async def create_invite():
     print('create invite function')
-    print('client: ', client)
-    print('guilds: ', client.guilds)
-    print('chennels: ', client.guilds[0].channels)
-    print('chennels: ', client.guilds[0].channels[0])
-    for server in client.guilds:
-        print('guilds cycle')
-        if server.name == "Cindicator's Macro Sentiment":
-            for channel in server.channels:
-                print('channels cycle')
-                if channel.name == "newcomers-questions":
-                    invite = await channel.create_invite(max_uses=1, unique=True)
-                    print(f'invite to {channel} created')
-                    print(f'link: {invite}')
-                    return invite
+
+    print('guild: ', my_guild)
+    print('', my_guild.channels)
+
+    for channel in my_guild.channels:
+        print('channels cycle', channel)
+        if channel.name == "newcomers-questions":
+            invite = await channel.create_invite(max_uses=1, unique=True)
+            print(f'invite to {channel} created')
+            print(f'link: {invite}')
+            return invite
+
+    # print('client: ', client)
+    # print('guilds: ', client.guilds)
+    # print('chennels: ', client.guilds[0].channels)
+    # print('chennels: ', client.guilds[0].channels[0])
+    # for server in client.guilds:
+    #     print('guilds cycle')
+    #     if server.name == "Cindicator's Macro Sentiment":
+    #         for channel in server.channels:
+    #             print('channels cycle')
+    #             if channel.name == "newcomers-questions":
+    #                 invite = await channel.create_invite(max_uses=1, unique=True)
+    #                 print(f'invite to {channel} created')
+    #                 print(f'link: {invite}')
+    #                 return invite
     return "nothing happened"
