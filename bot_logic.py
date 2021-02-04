@@ -328,6 +328,10 @@ async def on_reaction_add(reaction, user):
 
 async def create_invite():
     print('create invite function')
+    print('client: ', client)
+    print('guilds: ', client.guilds)
+    print('chennels: ', client.guilds[0].channels)
+    print('chennels: ', client.guilds[0].channels[0])
     for server in client.guilds:
         print('guilds cycle')
         if server.name == "Cindicator's Macro Sentiment":
