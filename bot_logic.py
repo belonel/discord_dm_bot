@@ -15,22 +15,22 @@ invites = {}
 
 users = []
 
-def get_email_from_local_by_discord_id(discord_id):
+def get_email_from_local_by_discord_username(discord_username):
     global users
     found = False
     for user in users:
-        if user[6] == discord_id:
+        if user[5] == discord_username:
             found = True
             return user[1]
     if not found:
         #загрузи, обнови users, повтори поиск
         users = get_all_users()
     for user in users:
-        if user[6] == discord_id:
+        if user[5] == discord_username:
             found = True
             return user[1]
     if found == False:
-        print(f"user_id: {discord_id}")
+        print(f"user_id: {discord_username}")
         print('all users now: ', users)
         return None
 
@@ -106,14 +106,14 @@ async def on_member_join(member):
 
 
     if used_invite.max_uses == 1:
-        user_email = get_email_from_local_by_discord_id(member.id)
+        user_email = get_email_from_local_by_discord_username(member.display_name)
         print(user_email)
         if user_email != None:
             # отправляем ивент с user_id = email
             user_id_to_amplitude = user_email
     else:
         # отправляем ивент с user_id = discord_id
-        user_id_to_amplitude = member.id
+        user_id_to_amplitude = member.display_name
 
     event_args = {
         "user_id": str(user_id_to_amplitude),
@@ -163,14 +163,14 @@ async def on_member_update(before, after):
 
         print(f'---> before: {before.status}, after: {after.status}, user_after: {after}, role: {role}')
 
-        user_email = get_email_from_local_by_discord_id(after.id)
+        user_email = get_email_from_local_by_discord_username(after.display_name)
         user_id_to_amplitude = ''
 
         if user_email != None:
             user_id_to_amplitude = user_email
         else:
             print(f"-?-> I don't know email for user @{after.display_name} in discord")
-            user_id_to_amplitude = after.id
+            user_id_to_amplitude = after.display_name
 
         event_args = {
             "user_id": str(user_id_to_amplitude),
@@ -242,14 +242,14 @@ async def on_member_update(before, after):
 async def on_message(message):
     print(f'Message from {message.author}: {message.content}, channel: {message.channel.name}')
 
-    user_email = get_email_from_local_by_discord_id(message.author.id)
+    user_email = get_email_from_local_by_discord_username(message.author.display_name)
     user_id_to_amplitude = ''
 
     if user_email != None:
         user_id_to_amplitude = user_email
     else:
         print(f"-?-> I don't know email for user {message.author.display_name} in discord\n")
-        user_id_to_amplitude = message.author.id
+        user_id_to_amplitude = message.author.display_name
 
     event_args = {
         "user_id": str(user_id_to_amplitude),
@@ -290,14 +290,14 @@ async def on_reaction_add(reaction, user):
     if '<:' in str(emoji):
         emoji = str(emoji)
 
-    user_email = get_email_from_local_by_discord_id(user.id)
+    user_email = get_email_from_local_by_discord_username(user.display_name)
     user_id_to_amplitude = ''
 
     if user_email != None:
         user_id_to_amplitude = user_email
     else:
         print(f"-?-> I don't know email for user {user.display_name} in discord\n")
-        user_id_to_amplitude = user.id
+        user_id_to_amplitude = user.display_name
 
     event_args = {
         "user_id": str(user_id_to_amplitude),
