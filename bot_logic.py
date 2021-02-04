@@ -46,9 +46,9 @@ async def on_ready():
         invites[guild.id] = await guild.invites()
         if guild.name == "Cindicator's Macro Sentiment":
             print('guild: ', guild)
-            # my_guild = guild
+            my_guild = guild
     users = get_all_users()
-    my_guild = 'g_name_test'
+    print('my_guild: ', my_guild)
     print(users)
 
 def find_invite_by_code(invite_list, code):
