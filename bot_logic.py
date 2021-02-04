@@ -29,7 +29,10 @@ def get_email_from_local_by_discord_id(discord_id):
         if user[6] == discord_id:
             found = True
             return user[1]
-    return None
+    if found == False:
+        print(f"user_id: {discord_id}")
+        print('all users now: ', users)
+        return None
 
 @client.event
 async def on_ready():
