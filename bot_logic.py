@@ -344,7 +344,12 @@ async def create_invite():
     c = discord.Object('741358287793946704')
     print('ch: ', c, type(c))
 
-    print('my guild: ', my_guild)
+    invite = await c.create_invite(max_uses=1, unique=True)
+    print(f'invite to {c.name} created')
+    print(f'link: {invite}')
+    return invite
+
+    # print('my guild: ', my_guild)
 
     # for channel in my_guild.channels:
     #     print('channels cycle', channel)
