@@ -341,9 +341,8 @@ async def create_invite():
     # await client.wait_until_ready()
 
     # g = await client.fetch_guild('741348383951945760')
-    g = discord.Object('741348383951945760')
-    print('g: ', g)
-    print('ch: ', g.channels)
+    c = discord.Object('741358287793946704')
+    print('ch: ', c, type(c))
 
     print('my guild: ', my_guild)
 
