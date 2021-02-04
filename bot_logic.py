@@ -38,7 +38,6 @@ def get_email_from_local_by_discord_id(discord_id):
 
 @client.event
 async def on_ready():
-    global my_guild
     print('Bot ready\n')
     # Getting all the guilds our bot is in
     for guild in client.guilds:
