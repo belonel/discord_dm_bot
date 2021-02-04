@@ -4,6 +4,9 @@ from flask import Flask, request, abort, jsonify
 from datetime import date
 from datetime import datetime
 
+from bot_logic import *
+import asyncio
+
 app = Flask(__name__)
 
 @app.route('/', methods=['POST'])
@@ -49,4 +52,6 @@ def handle_push():
         identify = amplitude_logger.create_ident(**indentify_args)
         amplitude_logger.log_ident(identify)
 
-    return jsonify({'status': 'ok'}), 200
+    new_invite = asyncio.create_task(create_invite())
+
+    return jsonify({'status': 'ok', 'invite_link': new_invite}), 200
