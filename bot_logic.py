@@ -49,6 +49,23 @@ def find_invite_by_code(invite_list, code):
         if inv.code == code:
             return inv
 
+
+@client.event
+async def on_invite_create(invite):
+    global invites
+    current_invites = await invite.guild.invites()
+    print("new invite: ", invite)
+    print("max uses: ", invite.max_uses)
+    invites[invite.guild.id] = current_invites
+
+@client.event
+async def on_invite_delete(invite):
+    global invites
+    current_invites = await invite.guild.invites()
+    print("deleted invite: ", invite)
+    print("max uses: ", invite.max_uses)
+    invites[invite.guild.id] = current_invites
+
 @client.event
 async def on_member_join(member):
     print(f'User joined!! at: {member.joined_at}, username: {member.display_name}\n'
