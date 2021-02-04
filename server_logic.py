@@ -52,13 +52,14 @@ def handle_push():
         identify = amplitude_logger.create_ident(**indentify_args)
         amplitude_logger.log_ident(identify)
 
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    new_invite = None
-    done = loop.run_until_complete(create_invite())
-    print(done)
-    new_invite = str(done)
-    loop.close()
+    # loop = asyncio.new_event_loop()
+    # asyncio.set_event_loop(loop)
+    # new_invite = None
+    # done = loop.run_until_complete(create_invite())
+    # print(done)
+    # new_invite = str(done)
+    # loop.close()
+    done = client.loop.create_task(create_invite())
 
 
-    return jsonify({'status': 'ok', 'invite_link': new_invite}), 200
+    return jsonify({'status': 'ok', 'invite_link': done}), 200
