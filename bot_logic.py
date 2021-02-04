@@ -44,6 +44,7 @@ async def on_ready():
         # Adding each guild's invites to our dict
         invites[guild.id] = await guild.invites()
         if guild.name == "Cindicator's Macro Sentiment":
+            print('guild: ', guild)
             my_guild = guild
     users = get_all_users()
     print(users)
