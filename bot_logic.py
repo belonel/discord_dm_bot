@@ -79,11 +79,13 @@ async def on_member_join(member):
                 invites[member.guild.id] = invites_after_join
                 break
 
+    update_by_invite_code(used_invite.code, member.name, member.id, member.joined_at)
+
     user_email = ''
     user_id_to_amplitude = ''
 
+
     if used_invite.max_uses == 1:
-        update_by_invite_code(used_invite.code, member.name, member.id, member.joined_at)
         user_email = get_email_from_local_by_discord_id(member.id)
         print(user_email)
         if user_email != None:
