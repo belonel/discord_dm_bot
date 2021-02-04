@@ -333,22 +333,26 @@ async def on_reaction_add(reaction, user):
     # send event to amplitude
     amplitude_logger.log_event(event)
 
+
 async def create_invite():
     global my_guild
     print('create invite function')
 
-    print('my guild: ', my_guild)
+    await client.wait_until_ready()
+
     g = await client.fetch_guild('741348383951945760')
     print('g: ', g)
     print('ch: ', g.channels)
 
-    for channel in my_guild.channels:
-        print('channels cycle', channel)
-        if channel.name == "newcomers-questions":
-            invite = await channel.create_invite(max_uses=1, unique=True)
-            print(f'invite to {channel} created')
-            print(f'link: {invite}')
-            return invite
+    print('my guild: ', my_guild)
+
+    # for channel in my_guild.channels:
+    #     print('channels cycle', channel)
+    #     if channel.name == "newcomers-questions":
+    #         invite = await channel.create_invite(max_uses=1, unique=True)
+    #         print(f'invite to {channel} created')
+    #         print(f'link: {invite}')
+    #         return invite
 
     # print('client: ', client)
     # print('guilds: ', client.guilds)
