@@ -336,3 +336,4 @@ async def create_invite():
                     print(f'invite to {channel} created')
                     print(f'link: {invite}')
                     return invite
+    return "nothing happened"
