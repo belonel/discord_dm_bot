@@ -338,7 +338,9 @@ async def create_invite():
     print('create invite function')
 
     print('my guild: ', my_guild)
-    # g = await client.fetch_guild('')
+    g = await client.fetch_guild('741348383951945760')
+    print('g: ', g)
+    print('ch: ', g.channels)
 
     for channel in my_guild.channels:
         print('channels cycle', channel)
