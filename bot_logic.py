@@ -329,8 +329,10 @@ async def on_reaction_add(reaction, user):
 async def create_invite():
     print('create invite function')
     for server in client.guilds:
+        print('guilds cycle')
         if server.name == "Cindicator's Macro Sentiment":
             for channel in server.channels:
+                print('channels cycle')
                 if channel.name == "newcomers-questions":
                     invite = await channel.create_invite(max_uses=1, unique=True)
                     print(f'invite to {channel} created')
