@@ -16,7 +16,7 @@ def server_run():
 if __name__ == '__main__':
     # print('hello')
     # print_all_users()
-    # Process(target=server_run).start()
+    Process(target=server_run).start()
     # server_run()
-    bot_run()
-    # Process(target=bot_run).start()
+    # bot_run()
+    Process(target=bot_run).start()
