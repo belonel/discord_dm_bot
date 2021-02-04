@@ -327,6 +327,7 @@ async def on_reaction_add(reaction, user):
     amplitude_logger.log_event(event)
 
 async def create_invite():
+    print('create invite function')
     for server in client.guilds:
         if server.name == "Cindicator's Macro Sentiment":
             for channel in server.channels:
@@ -334,3 +335,4 @@ async def create_invite():
                     invite = await channel.create_invite(max_uses=1, unique=True)
                     print(f'invite to {channel} created')
                     print(f'link: {invite}')
+                    return invite
