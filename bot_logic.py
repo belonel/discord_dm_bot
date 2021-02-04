@@ -38,6 +38,7 @@ def get_email_from_local_by_discord_id(discord_id):
 
 @client.event
 async def on_ready():
+    global my_guild
     print('Bot ready\n')
     # Getting all the guilds our bot is in
     for guild in client.guilds:
@@ -45,8 +46,9 @@ async def on_ready():
         invites[guild.id] = await guild.invites()
         if guild.name == "Cindicator's Macro Sentiment":
             print('guild: ', guild)
-            my_guild = guild
+            # my_guild = guild
     users = get_all_users()
+    my_guild = 'g_name_test'
     print(users)
 
 def find_invite_by_code(invite_list, code):
