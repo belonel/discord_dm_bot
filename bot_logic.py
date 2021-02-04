@@ -1,5 +1,6 @@
 import discord
 from config import *
+from db_logic import *
 
 intents = discord.Intents.default()
 intents.presences = True
@@ -12,12 +13,120 @@ client = discord.Client(intents=intents)
 
 invites = {}
 
+users = []
+
+def get_email_from_local_by_discord_id(discord_id):
+    global users
+    found = False
+    for user in users:
+        if user[6] == discord_id:
+            found = True
+            return user[1]
+    if not found:
+        #загрузи, обнови users, повтори поиск
+        users = get_all_users()
+    for user in users:
+        if user[6] == discord_id:
+            found = True
+            return user[1]
+    return None
+
 @client.event
 async def on_ready():
+    print('Bot ready\n')
     # Getting all the guilds our bot is in
     for guild in client.guilds:
         # Adding each guild's invites to our dict
         invites[guild.id] = await guild.invites()
+    users = get_all_users()
+    print(users)
+
+def find_invite_by_code(invite_list, code):
+    for inv in invite_list:
+        if inv.code == code:
+            return inv
+
+@client.event
+async def on_member_join(member):
+    print(f'User joined!! at: {member.joined_at}, username: {member.display_name}\n'
+          f'user_discriminator: {member.discriminator}, user_id: {member.id}\n')
+
+    invites_before_join = invites[member.guild.id]
+    invites_after_join = await member.guild.invites()
+
+    invite_is_temp = False
+    used_invite = None
+
+    for invite in invites_before_join:
+        if invite not in invites_after_join:
+            invite_is_temp = True
+            used_invite = invite
+            print(f"Member {member.name} Joined")
+            print(f"Invite Code: {invite.code}")
+            print(f"Inviter: {invite.inviter}\n")
+
+            invites[member.guild.id] = invites_after_join
+            break
+
+    if not invite_is_temp:
+        for invite in invites_before_join:
+            if invite.uses < find_invite_by_code(invites_after_join, invite.code).uses:
+                used_invite = invite
+                print(f"Member {member.name} Joined")
+                print(f"Invite Code: {invite.code}")
+                print(f"Inviter: {invite.inviter}\n")
+
+                invites[member.guild.id] = invites_after_join
+                break
+
+    user_email = ''
+    user_id_to_amplitude = ''
+
+    if used_invite.max_uses == 1:
+        update_by_invite_code(used_invite.code, member.name, member.id, member.joined_at)
+        user_email = get_email_from_local_by_discord_id(member.id)
+        print(user_email)
+        if user_email != None:
+            # отправляем ивент с user_id = email
+            user_id_to_amplitude = user_email
+    else:
+        # отправляем ивент с user_id = discord_id
+        user_id_to_amplitude = member.id
+
+    event_args = {
+        "user_id": str(user_id_to_amplitude),
+        "event_type": "Joined discord first time",
+        "user_properties":
+            {
+                "discord_username": str(member.display_name),
+                "discord_handle": str(member.discriminator),
+                "joined_discord_at": str(member.joined_at),
+                "joined_year": str(member.joined_at.isocalendar()[0]),
+                "joined_week_number": str(member.joined_at.isocalendar()[1]),
+                "joined_weekday": str(member.joined_at.isocalendar()[2]),
+                "discord_roles": "Trial",
+                "#messages_sent": 0,
+            },
+
+    }
+    event = amplitude_logger.create_event(**event_args)
+    # send event to amplitude
+    amplitude_logger.log_event(event)
+
+    indentify_args = {
+        "user_id": str(user_id_to_amplitude),
+        "user_properties": {
+            "$setOnce": {
+                "joined_discord_at": str(member.joined_at),
+                "joined_year": str(member.joined_at.isocalendar()[0]),
+                "joined_week_number": str(member.joined_at.isocalendar()[1]),
+                "joined_weekday": str(member.joined_at.isocalendar()[2]),
+            }
+        }
+    }
+    identify = amplitude_logger.create_ident(**indentify_args)
+    amplitude_logger.log_ident(identify)
+
 
 @client.event
 async def on_member_update(before, after):
@@ -31,8 +140,18 @@ async def on_member_update(before, after):
             role = roles[1]
 
         print(f'---> before: {before.status}, after: {after.status}, user_after: {after}, role: {role}')
+
+        user_email = get_email_from_local_by_discord_id(after.id)
+        user_id_to_amplitude = ''
+
+        if user_email != None:
+            user_id_to_amplitude = user_email
+        else:
+            print(f"-?-> I don't know email for user @{after.display_name} in discord")
+            user_id_to_amplitude = after.id
+
         event_args = {
-            "user_id": str(after.id),
+            "user_id": str(user_id_to_amplitude),
             "event_type": "Switched status",
             "event_properties":
                 {
@@ -57,9 +176,9 @@ async def on_member_update(before, after):
 
         if str(before.status) != 'online' and str(after.status) == 'online':
             # user bacame online
-            print('user bacame online')
+            print('user bacame online\n')
             event_args = {
-                "user_id": str(after.id),
+                "user_id": str(user_id_to_amplitude),
                 "event_type": "Switched to online",
             }
             event = amplitude_logger.create_event(**event_args)
@@ -68,60 +187,50 @@ async def on_member_update(before, after):
 
         elif str(before.status) != "offline" and str(after.status) == 'offline':
             # user bacame offline
-            print('user bacame offline')
+            print('user bacame offline\n')
             event_args = {
-                "user_id": str(after.id),
+                "user_id": str(user_id_to_amplitude),
                 "event_type": "Switched to offline",
+            }
+            event = amplitude_logger.create_event(**event_args)
+            # send event to amplitude
+            amplitude_logger.log_event(event)
+        elif str(before.status) != "idle" and str(after.status) == 'idle':
+            # user bacame idle
+            print('user bacame idle\n')
+            event_args = {
+                "user_id": str(user_id_to_amplitude),
+                "event_type": "Switched to idle",
+            }
+            event = amplitude_logger.create_event(**event_args)
+            # send event to amplitude
+            amplitude_logger.log_event(event)
+        elif str(before.status) != "dnd" and str(after.status) == 'dnd':
+            # user bacame dnd
+            print('user became dont disturb\n')
+            event_args = {
+                "user_id": str(user_id_to_amplitude),
+                "event_type": "Switched to dnd",
             }
             event = amplitude_logger.create_event(**event_args)
             # send event to amplitude
             amplitude_logger.log_event(event)
 
 @client.event
-async def on_member_join(member):
-    print(f'joined_at: {member.joined_at}\nusername: {member.display_name}\n'
-          f'user_discriminator: {member.discriminator}\nuser_id: {member.id}\n')
-    event_args = {
-        "user_id": str(member.id),
-        "event_type": "Joined discord first time",
-        "user_properties":
-            {
-                "discord_username": str(member.display_name),
-                "discord_handle": str(member.discriminator),
-                "joined_discord_at": str(member.joined_at),
-                "joined_year": str(member.joined_at.isocalendar()[0]),
-                "joined_week_number": str(member.joined_at.isocalendar()[1]),
-                "joined_weekday": str(member.joined_at.isocalendar()[2]),
-                "discord_roles": "Trial",
-                "#messages_sent": 0,
-            },
-
-    }
-    event = amplitude_logger.create_event(**event_args)
-    # send event to amplitude
-    amplitude_logger.log_event(event)
-
-    indentify_args = {
-        "user_id": str(member.id),
-        "user_properties": {
-            "$setOnce": {
-                "joined_discord_at": str(member.joined_at),
-                "joined_year": str(member.joined_at.isocalendar()[0]),
-                "joined_week_number": str(member.joined_at.isocalendar()[1]),
-                "joined_weekday": str(member.joined_at.isocalendar()[2]),
-            }
-        }
-    }
-    identify = amplitude_logger.create_ident(**indentify_args)
-    amplitude_logger.log_ident(identify)
-
-
-@client.event
 async def on_message(message):
     print(f'Message from {message.author}: {message.content}, channel: {message.channel.name}')
 
+    user_email = get_email_from_local_by_discord_id(message.author.id)
+    user_id_to_amplitude = ''
+
+    if user_email != None:
+        user_id_to_amplitude = user_email
+    else:
+        print(f"-?-> I don't know email for user {message.author.display_name} in discord\n")
+        user_id_to_amplitude = message.author.id
+
     event_args = {
-        "user_id": str(message.author.id),
+        "user_id": str(user_id_to_amplitude),
         "event_type": "Message sent",
         "event_properties": {
             "channel": str(message.channel.name),
@@ -143,7 +252,7 @@ async def on_message(message):
     amplitude_logger.log_event(event)
 
     indentify_args = {
-        "user_id": str(message.author.id),
+        "user_id": str(user_id_to_amplitude),
         "user_properties": {
             "$add": {"#messages_sent": 1}
         }
@@ -159,8 +268,17 @@ async def on_reaction_add(reaction, user):
     if '<:' in str(emoji):
         emoji = str(emoji)
 
+    user_email = get_email_from_local_by_discord_id(user.id)
+    user_id_to_amplitude = ''
+
+    if user_email != None:
+        user_id_to_amplitude = user_email
+    else:
+        print(f"-?-> I don't know email for user {user.display_name} in discord\n")
+        user_id_to_amplitude = user.id
+
     event_args = {
-        "user_id": str(user.id),
+        "user_id": str(user_id_to_amplitude),
         "event_type": "Reaction added",
         "event_properties": {
             "emoji": emoji,
