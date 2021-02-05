@@ -9,8 +9,8 @@ def bot_run():
 
 def server_run():
     print("Listening...")
-    app.run(debug=False, host='0.0.0.0', port=8085)
-    # port = int(os.environ.get("PORT", 5000))
+    # app.run(debug=False, host='0.0.0.0', port=8085)
+    port = int(os.environ.get("PORT", 5000))
     # app.run(host='0.0.0.0', port=port)
 def server_alive():
     while(True):
