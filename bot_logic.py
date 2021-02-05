@@ -235,16 +235,9 @@ async def on_member_update(before, after):
 @client.event
 async def on_message(message):
     print(f'Message from {message.author}: {message.content}, channel: {message.channel.name}')
-    # print(f'channels: \n {message.guild.channels}')
-    # if message.content == 'create_new_invite' and message.channel.name == 'test-bot-integration':
-    #     for server in client.guilds:
-    #         if server.name == "Cindicator's Macro Sentiment":
-    #             for channel in server.channels:
-    #                 if channel.name == "newcomers-questions":
-    #                     invite = await channel.create_invite(max_uses=1, unique=True)
-    #                     print(f'invite to {channel} created')
-    #                     print(f'link: {invite}')
-    #                     await message.channel.send("Created")
+    
+    if message.channel.name == 'test-bot-integration' or message.channel.name == 'moderator-only' or message.channel.name == 'moderator-only-test':
+        return
 
     user_email = get_email_from_local_by_discord_id(message.author.id)
     user_id_to_amplitude = ''
