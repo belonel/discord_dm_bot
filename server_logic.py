@@ -57,5 +57,6 @@ def handle_push():
 
 @app.route('/')
 def home():
+    print("PING - I am alive!")
     return "PING - I am alive!"
 
