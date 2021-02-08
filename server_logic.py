@@ -9,7 +9,7 @@ import asyncio
 
 app = Flask(__name__)
 
-@app.route('/', methods=['POST'])
+@app.route('/trial', methods=['POST'])
 def handle_push():
     print(request.data.decode('utf-8'))
     if not request.json:
@@ -53,3 +53,9 @@ def handle_push():
         amplitude_logger.log_ident(identify)
 
     return jsonify({'status': 'ok'}), 200
+
+
+@app.route('/')
+def home():
+    return "PING - I am alive!"
+
