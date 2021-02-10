@@ -73,11 +73,12 @@ def charge_handle():
 
     data = request.json
 
-    #     if data['email'] != None and data['stripe_cust_id'] != None and data['customer_name'] != None \
-    #             and data['product_name'] != None and data['subs_price'] != None and data['subs_interval'] != None \
-    #             and data['payment_status'] != None and data['failure_message'] != None:
-    #         event_args = {}
-    #         if data['payment_status'] == 'succeeded':
+    if data['email'] != None and data['stripe_cust_id'] != None and data['customer_name'] != None \
+            and data['product_name'] != None and data['subs_price'] != None and data['subs_interval'] != None \
+            and data['payment_status'] != None and data['failure_message'] != None:
+        event_args = {}
+        if data['payment_status'] == 'succeeded':
+            print('succeeded')
     #             event_args = {
     #                 "user_id": str(data['email']),
     #                 "event_type": "Success payment",
