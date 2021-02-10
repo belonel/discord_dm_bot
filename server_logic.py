@@ -75,8 +75,7 @@ def charge_handle():
 
     if data['email'] != None and data['stripe_cust_id'] != None and data['customer_name'] != None \
             and data['product_name'] != None and data['subs_price'] != None and data['subs_interval'] != None \
-            and data['payment_status'] != None and data['failure_message'] != None:
-        event_args = {}
+            and data['payment_status'] != None and data['failure_message'] != None: 
         if data['payment_status'] == 'succeeded':
             print('succeeded')
             event_args = {
@@ -110,24 +109,22 @@ def charge_handle():
             }
             identify = amplitude_logger.create_ident(**indentify_args)
             amplitude_logger.log_ident(identify)
-    #         elif data['payment_status'] == 'failed':
-    #             event_args = {
-    #                 "user_id": str(data['email']),
-    #                 "event_type": "Failed Charge",
-    #                 "event_properties": {
-    #                     "reason": data['failure_message'],
-    #                     "product_name": data['product_name'],
-    #                 },
-    #                 "price": -float(data['subs_price']),
-    #                 "revenue": -float(data['subs_price']),
-    #                 "productId": data['product_name'],
-    #                 "revenueType": "Refund",
-    #             }
-
-    #         event = amplitude_logger.create_event(**event_args)
-    #         # send event to amplitude
-    #         amplitude_logger.log_event(event)
-
+        elif data['payment_status'] == 'failed':
+            event_args = {
+                "user_id": str(data['email']),
+                "event_type": "Failed Charge",
+                "event_properties": {
+                    "reason": data['failure_message'],
+                    "product_name": data['product_name'],
+                },
+                "price": -float(data['subs_price']),
+                "revenue": -float(data['subs_price']),
+                "productId": data['product_name'],
+                "revenueType": "Refund",
+            }
+            event = amplitude_logger.create_event(**event_args)
+            # send event to amplitude
+            amplitude_logger.log_event(event)
     return jsonify({'status': 'ok'}), 200
 
 @app.route('/refund', methods=['POST'])
