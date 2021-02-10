@@ -65,7 +65,7 @@ def home():
 
 
 @app.route('/payment', methods=['POST'])
-def handle_push():
+def charge_handle():
     print(request.data.decode('utf-8'))
     if not request.json:
         abort(400)
@@ -130,7 +130,7 @@ def handle_push():
     return jsonify({'status': 'ok'}), 200
 
 @app.route('/refund', methods=['POST'])
-def handle_push():
+def refund_handle():
     print(request.data.decode('utf-8'))
     if not request.json:
         abort(400)
@@ -172,13 +172,13 @@ def handle_push():
     return jsonify({'status': 'ok'}), 200
 
 @app.route('/subs_cancell', methods=['POST'])
-def handle_push():
+def cancel_handle():
     # TODO посылать event в Amplitude
     # TODO identify: remove product name from subscribed_to
     return "OK"
 
 @app.route('/unsubscribed', methods=['POST'])
-def handle_push():
+def unsubs_handle():
     # TODO посылать event в Amplitude
     # TODO identify: remove product name from subscribed_to
     return "OK"
