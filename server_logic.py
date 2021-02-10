@@ -106,9 +106,6 @@ def charge_handle():
             }
             identify = amplitude_logger.create_ident(**indentify_args)
             amplitude_logger.log_ident(identify)
-
-
-
         elif data['payment_status'] == 'failed':
             event_args = {
                 "user_id": str(data['email']),
