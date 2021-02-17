@@ -98,7 +98,8 @@ async def on_member_join(member):
     user_id_to_amplitude = ''
 
 
-    if used_invite.max_uses == 1:
+    if used_invite.inviter.name == 'Integromat':
+        print(f'inviter name: {used_invite.inviter.name}')
         user_email = get_email_from_local_by_discord_id(member.id)
         print(f'joined user email: {user_email}')
         if user_email != None:
@@ -235,7 +236,7 @@ async def on_member_update(before, after):
 @client.event
 async def on_message(message):
     print(f'Message from {message.author}: {message.content}, channel: {message.channel.name}')
-    
+
     if message.channel.name == 'test-bot-integration' or message.channel.name == 'moderator-only' or message.channel.name == 'moderator-only-test':
         return
 
