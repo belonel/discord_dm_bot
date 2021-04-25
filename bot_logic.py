@@ -1,6 +1,7 @@
 import discord
 from config import *
 from db_logic import *
+from stripe_logic import *
 
 intents = discord.Intents.default()
 intents.presences = True
@@ -15,20 +16,20 @@ invites = {}
 
 users = []
 
-def get_email_from_local_by_discord_id(discord_id):
+def get_user_data_from_local_by_discord_id(discord_id):
     global users
     found = False
     for user in users:
         if user[6] == str(discord_id):
             found = True
-            return user[1]
+            return user
     if not found:
         #загрузи, обнови users, повтори поиск
         users = get_all_users()
     for user in users:
         if user[6] == str(discord_id):
             found = True
-            return user[1]
+            return user
     if found == False:
         # print(f"user_id: {discord_id}")
         # print('all users now: ', users)
@@ -100,11 +101,19 @@ async def on_member_join(member):
 
     if used_invite.inviter.name == 'Integromat':
         print(f'inviter name: {used_invite.inviter.name}')
-        user_email = get_email_from_local_by_discord_id(member.id)
+
+        user_data = get_user_data_from_local_by_discord_id(member.id)
+        user_email = user_data[1] if (user_data != None) else None
+        user_stripe_id = user_data[2] if (user_data != None) else None
+
         print(f'joined user email: {user_email}')
-        if user_email != None:
+        if user_data != None:
             # отправляем ивент с user_id = email
             user_id_to_amplitude = user_email
+            #добавляем в карточку кастомера в страйпе ник
+            update_customer_description(user_stripe_id, member.display_name + '#' + member.discriminator)
+            update_customer_metadata(user_stripe_id, {"discord_nickname": member.display_name,
+                                                      "discord_user_id": member.id})
     else:
         # отправляем ивент с user_id = discord_id
         user_id_to_amplitude = member.id
@@ -157,10 +166,11 @@ async def on_member_update(before, after):
 
         # print(f'---> before: {before.status}, after: {after.status}, user_after: {after}, role: {role}')
 
-        user_email = get_email_from_local_by_discord_id(after.id)
+        user_data = get_user_data_from_local_by_discord_id(after.id)
+        user_email = user_data[1] if (user_data != None) else None
         user_id_to_amplitude = ''
 
-        if user_email != None:
+        if user_data != None:
             user_id_to_amplitude = user_email
         else:
             # print(f"-?-> I don't know email for user @{after.display_name} in discord")
@@ -190,6 +200,48 @@ async def on_member_update(before, after):
         # send event to amplitude
         amplitude_logger.log_event(event)
 
+        if str(before.status) != 'online' and str(after.status) == 'online':
+            # user bacame online
+            # print('user bacame online\n')
+            event_args = {
+                "user_id": str(user_id_to_amplitude),
+                "event_type": "Switched to online",
+            }
+            event = amplitude_logger.create_event(**event_args)
+            # send event to amplitude
+            amplitude_logger.log_event(event)
+
+        elif str(before.status) != "offline" and str(after.status) == 'offline':
+            # user bacame offline
+            # print('user bacame offline\n')
+            event_args = {
+                "user_id": str(user_id_to_amplitude),
+                "event_type": "Switched to offline",
+            }
+            event = amplitude_logger.create_event(**event_args)
+            # send event to amplitude
+            amplitude_logger.log_event(event)
+        elif str(before.status) != "idle" and str(after.status) == 'idle':
+            # user bacame idle
+            # print('user bacame idle\n')
+            event_args = {
+                "user_id": str(user_id_to_amplitude),
+                "event_type": "Switched to idle",
+            }
+            event = amplitude_logger.create_event(**event_args)
+            # send event to amplitude
+            amplitude_logger.log_event(event)
+        elif str(before.status) != "dnd" and str(after.status) == 'dnd':
+            # user bacame dnd
+            # print('user became dont disturb\n')
+            event_args = {
+                "user_id": str(user_id_to_amplitude),
+                "event_type": "Switched to dnd",
+            }
+            event = amplitude_logger.create_event(**event_args)
+            # send event to amplitude
+            amplitude_logger.log_event(event)
+
 
 @client.event
 async def on_message(message):
@@ -198,10 +250,11 @@ async def on_message(message):
     if message.channel.name == 'test-bot-integration' or message.channel.name == 'moderator-only' or message.channel.name == 'moderator-only-test':
         return
 
-    user_email = get_email_from_local_by_discord_id(message.author.id)
+    user_data = get_user_data_from_local_by_discord_id(message.author.id)
+    user_email = user_data[1] if (user_data != None) else None
     user_id_to_amplitude = ''
 
-    if user_email != None:
+    if user_data != None:
         user_id_to_amplitude = user_email
     else:
         print(f"-?-> I don't know email for user {message.author.display_name} in discord\n")
@@ -246,10 +299,12 @@ async def on_reaction_add(reaction, user):
     if '<:' in str(emoji):
         emoji = str(emoji)
 
-    user_email = get_email_from_local_by_discord_id(user.id)
+    user_data = get_user_data_from_local_by_discord_id(user.id)
+    user_email = user_data[1] if (user_data != None) else None
+
     user_id_to_amplitude = ''
 
-    if user_email != None:
+    if user_data != None:
         user_id_to_amplitude = user_email
     else:
         print(f"-?-> I don't know email for user {user.display_name} in discord\n")
