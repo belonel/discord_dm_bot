@@ -200,49 +200,6 @@ async def on_member_update(before, after):
         # send event to amplitude
         amplitude_logger.log_event(event)
 
-        if str(before.status) != 'online' and str(after.status) == 'online':
-            # user bacame online
-            # print('user bacame online\n')
-            event_args = {
-                "user_id": str(user_id_to_amplitude),
-                "event_type": "Switched to online",
-            }
-            event = amplitude_logger.create_event(**event_args)
-            # send event to amplitude
-            amplitude_logger.log_event(event)
-
-        elif str(before.status) != "offline" and str(after.status) == 'offline':
-            # user bacame offline
-            # print('user bacame offline\n')
-            event_args = {
-                "user_id": str(user_id_to_amplitude),
-                "event_type": "Switched to offline",
-            }
-            event = amplitude_logger.create_event(**event_args)
-            # send event to amplitude
-            amplitude_logger.log_event(event)
-        elif str(before.status) != "idle" and str(after.status) == 'idle':
-            # user bacame idle
-            # print('user bacame idle\n')
-            event_args = {
-                "user_id": str(user_id_to_amplitude),
-                "event_type": "Switched to idle",
-            }
-            event = amplitude_logger.create_event(**event_args)
-            # send event to amplitude
-            amplitude_logger.log_event(event)
-        elif str(before.status) != "dnd" and str(after.status) == 'dnd':
-            # user bacame dnd
-            # print('user became dont disturb\n')
-            event_args = {
-                "user_id": str(user_id_to_amplitude),
-                "event_type": "Switched to dnd",
-            }
-            event = amplitude_logger.create_event(**event_args)
-            # send event to amplitude
-            amplitude_logger.log_event(event)
-
-
 @client.event
 async def on_message(message):
     print(f'Message from {message.author}: {message.content}, channel: {message.channel.name}')
