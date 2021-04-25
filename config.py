@@ -8,5 +8,7 @@ AMPLITUDE_API_KEY = token.secret_key
 
 DATABASE_URL = os.environ['DATABASE_URL']
 
+STRIPE_KEY = os.environ['STRIPE_KEY']
+
 # initialize amplitude logger
 amplitude_logger = amplitude_logger.AmplitudeLogger(api_key=AMPLITUDE_API_KEY)
