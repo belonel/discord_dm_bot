@@ -2,15 +2,14 @@ import psycopg2
 from config import *
 
 
-def insert_user(email, stripe_id, created_at, invite_code):
+def insert_user(email, stripe_id, created_at, invite_code, server_name):
     try:
         conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 
         cur = conn.cursor()
 
         # execute a statement
-        cur.execute(f"INSERT INTO users(email, stripe_cust_id, created_at, invite_code) values('{email}', '{stripe_id}', '{created_at}', '{invite_code}');")
-
+        cur.execute(f"INSERT INTO users(email, stripe_cust_id, created_at, invite_code, Discord_Server_Name) values('{email}', '{stripe_id}', '{created_at}', '{invite_code}', '{server_name}');")
         conn.commit()
         print('data inserted')
         # close the communication with the PostgreSQL
@@ -73,14 +72,22 @@ def get_user_by_invite_code(inv_code):
 def get_user_by_discord_id():
     pass
 
-def update_by_invite_code(invite_code, username, user_id, joined_at):
+def update_by_invite_code_and_server_name(invite_code, username, user_id, joined_at, server_name):
     conn = None
     try:
         conn = psycopg2.connect(DATABASE_URL, sslmode='require')
         cur = conn.cursor()
 
         # execute a statement
-        cur.execute(f"UPDATE users SET discord_username = '{username}' where invite_code='{invite_code}'; UPDATE users SET discord_id = '{user_id}' where invite_code='{invite_code}'; UPDATE users SET joined_at = '{joined_at}' where invite_code='{invite_code}';")
+        if 'Super' in server_name:
+            cur.execute(
+                f"UPDATE users SET discord_username = '{username}' where invite_code='{invite_code}' and Discord_Server_Name = 'Super Forecasters'; "
+                f"UPDATE users SET discord_id = '{user_id}' where invite_code='{invite_code}'; and Discord_Server_Name = 'Super Forecasters'; "
+                f"UPDATE users SET joined_at = '{joined_at}' where invite_code='{invite_code}'; and Discord_Server_Name = 'Super Forecasters'; ")
+        elif 'Macro' in server_name:
+            cur.execute(f"UPDATE users SET discord_username = '{username}' where invite_code='{invite_code}' and Discord_Server_Name = 'Macro Sentiments'; "
+                        f"UPDATE users SET discord_id = '{user_id}' where invite_code='{invite_code}'; and Discord_Server_Name = 'Macro Sentiments'; "
+                        f"UPDATE users SET joined_at = '{joined_at}' where invite_code='{invite_code}'; and Discord_Server_Name = 'Macro Sentiments'; ")
 
         conn.commit()
         print('data updated')
