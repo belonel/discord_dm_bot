@@ -22,7 +22,7 @@ def get_user_data_from_local_by_discord_id_and_guild_name_and_invite_code(discor
     my_server_name = 'Macro Sentiments' if 'Macro' in guild_name else 'Super Forecasters'
 
     for user in users:
-        if user[6] == str(discord_id) and user[8] == str(my_server_name) and user[4] == str(invite_code):
+        if user[6] == str(discord_id) and user[8] == str(my_server_name) and invite_code != None and user[4] == str(invite_code):
             found = True
             return user
     if not found:
