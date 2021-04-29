@@ -16,13 +16,13 @@ invites = {}
 
 users = []
 
-def get_user_data_from_local_by_discord_id_and_guild_name(discord_id, guild_name):
+def get_user_data_from_local_by_discord_id_and_guild_name_and_invite_code(discord_id, guild_name, invite_code = None):
     global users
     found = False
     my_server_name = 'Macro Sentiments' if 'Macro' in guild_name else 'Super Forecasters'
 
     for user in users:
-        if user[6] == str(discord_id) and user[8] == str(my_server_name):
+        if user[6] == str(discord_id) and user[8] == str(my_server_name) and user[4] == str(invite_code):
             found = True
             return user
     if not found:
@@ -109,7 +109,7 @@ async def on_member_join(member):
     if used_invite.inviter.name == 'Integromat':
         print(f'inviter name: {used_invite.inviter.name}')
 
-        user_data = get_user_data_from_local_by_discord_id_and_guild_name(member.id, member.guild.name)
+        user_data = get_user_data_from_local_by_discord_id_and_guild_name_and_invite_code(member.id, member.guild.name, used_invite.code)
         user_email = user_data[1] if (user_data != None) else None
         user_stripe_id = user_data[2] if (user_data != None) else None
 
@@ -175,7 +175,7 @@ async def on_member_update(before, after):
 
             # print(f'---> before: {before.status}, after: {after.status}, user_after: {after}, role: {role}')
 
-            user_data = get_user_data_from_local_by_discord_id_and_guild_name(after.id, after.guild.name)
+            user_data = get_user_data_from_local_by_discord_id_and_guild_name_and_invite_code(after.id, after.guild.name)
             user_email = user_data[1] if (user_data != None) else None
             user_id_to_amplitude = ''
 
@@ -218,7 +218,7 @@ async def on_message(message):
         if message.channel.name == 'test-bot-integration' or message.channel.name == 'moderator-only' or message.channel.name == 'moderator-only-test':
             return
 
-        user_data = get_user_data_from_local_by_discord_id_and_guild_name(message.author.id, message.author.guild.name)
+        user_data = get_user_data_from_local_by_discord_id_and_guild_name_and_invite_code(message.author.id, message.author.guild.name)
         user_email = user_data[1] if (user_data != None) else None
         user_id_to_amplitude = ''
 
@@ -271,7 +271,7 @@ async def on_reaction_add(reaction, user):
         if '<:' in str(emoji):
             emoji = str(emoji)
 
-        user_data = get_user_data_from_local_by_discord_id_and_guild_name(user.id, user.guild.name)
+        user_data = get_user_data_from_local_by_discord_id_and_guild_name_and_invite_code(user.id, user.guild.name)
         user_email = user_data[1] if (user_data != None) else None
 
         user_id_to_amplitude = ''
