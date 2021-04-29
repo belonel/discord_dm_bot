@@ -37,11 +37,15 @@ def get_user_data_from_local_by_discord_id(discord_id):
 
 @client.event
 async def on_ready():
+    await client.wait_until_ready()
     print(f'Bot ready on guilds: {client.guilds}\n')
     # Getting all the guilds our bot is in
     for guild in client.guilds:
         # Adding each guild's invites to our dict
-        invites[guild.id] = await guild.invites()
+        try:
+            invites[guild.id] = await guild.invites()
+        except Exception as e:
+            print(e, '\n', guild)
     users = get_all_users()
     print(users)
 
