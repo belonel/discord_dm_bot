@@ -82,12 +82,12 @@ def update_by_invite_code_and_server_name(invite_code, username, user_id, joined
         if 'Super' in server_name:
             cur.execute(
                 f"UPDATE users SET discord_username = '{username}' where invite_code='{invite_code}' and discord_server_name = 'Super Forecasters'; "
-                f"UPDATE users SET discord_id = '{user_id}' where invite_code='{invite_code}'; and discord_server_name = 'Super Forecasters'; "
-                f"UPDATE users SET joined_at = '{joined_at}' where invite_code='{invite_code}'; and discord_server_name = 'Super Forecasters'; ")
+                f"UPDATE users SET discord_id = '{user_id}' where invite_code='{invite_code}' and discord_server_name = 'Super Forecasters'; "
+                f"UPDATE users SET joined_at = '{joined_at}' where invite_code='{invite_code}' and discord_server_name = 'Super Forecasters'; ")
         elif 'Macro' in server_name:
             cur.execute(f"UPDATE users SET discord_username = '{username}' where invite_code='{invite_code}' and discord_server_name = 'Macro Sentiments'; "
-                        f"UPDATE users SET discord_id = '{user_id}' where invite_code='{invite_code}'; and discord_server_name = 'Macro Sentiments'; "
-                        f"UPDATE users SET joined_at = '{joined_at}' where invite_code='{invite_code}'; and discord_server_name = 'Macro Sentiments'; ")
+                        f"UPDATE users SET discord_id = '{user_id}' where invite_code='{invite_code}' and discord_server_name = 'Macro Sentiments'; "
+                        f"UPDATE users SET joined_at = '{joined_at}' where invite_code='{invite_code}' and discord_server_name = 'Macro Sentiments'; ")
 
         conn.commit()
         print('data updated')
