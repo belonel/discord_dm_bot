@@ -92,6 +92,7 @@ def charge_handle():
                 "event_properties": {
                     "product_name": data['product_name'],
                     "subscription_interval": data['subs_interval'],
+                    "price": float(data['subs_price']),
                 },
                 "price": float(data['subs_price']),
                 "quantity": 1,
@@ -124,6 +125,7 @@ def charge_handle():
                 "event_properties": {
                     "reason": data['failure_message'],
                     "product_name": data['product_name'],
+                    "price": float(data['subs_price']),
                 },
                 "price": 0,
                 "revenue": 0,
@@ -153,6 +155,7 @@ def refund_handle():
             "event_properties": {
                 "reason": data['reason'],
                 "product_name": data['product_name'],
+                "amount_refunded": float(data['amount']),
             },
             "price": -float(data['amount']),
             "revenue": -float(data['amount']),
