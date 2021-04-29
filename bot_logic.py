@@ -209,8 +209,8 @@ async def on_member_update(before, after):
 
 @client.event
 async def on_message(message):
+    print(f'Message from {message.author}: {message.content}, channel: {message.channel.name}')
     if 'Macro' in message.author.guild.name:
-        print(f'Message from {message.author}: {message.content}, channel: {message.channel.name}')
 
         if message.channel.name == 'test-bot-integration' or message.channel.name == 'moderator-only' or message.channel.name == 'moderator-only-test':
             return
@@ -258,9 +258,11 @@ async def on_message(message):
 
 @client.event
 async def on_reaction_add(reaction, user):
+    emoji = reaction.emoji
+    print(
+        f'reaction: {emoji}, message: {reaction.message.content}, user: {user.display_name}, author: {reaction.message.author.display_name}')
+
     if 'Macro' in user.guild.name:
-        emoji = reaction.emoji
-        print(f'reaction: {emoji}, message: {reaction.message.content}, user: {user.display_name}, author: {reaction.message.author.display_name}')
 
         if '<:' in str(emoji):
             emoji = str(emoji)
