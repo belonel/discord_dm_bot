@@ -2,14 +2,14 @@ import psycopg2
 from config import *
 
 
-def insert_user(email, stripe_id, created_at, invite_code, server_name):
+def insert_user(email, stripe_id, created_at, invite_code, server_name, product_name):
     try:
         conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 
         cur = conn.cursor()
 
         # execute a statement
-        cur.execute(f"INSERT INTO users(email, stripe_cust_id, created_at, invite_code, discord_server_name) values('{email}', '{stripe_id}', '{created_at}', '{invite_code}', '{server_name}');")
+        cur.execute(f"INSERT INTO users(email, stripe_cust_id, created_at, invite_code, discord_server_name, plan_name) values('{email}', '{stripe_id}', '{created_at}', '{invite_code}', '{server_name}', '{product_name}');")
         conn.commit()
         print('data inserted')
         # close the communication with the PostgreSQL
