@@ -57,16 +57,12 @@ def handle_push():
             and data['created_at'] != None and data['invite_code'] != None \
             and data['product_name'] != None and data['subs_price'] != None and data['subs_interval'] != None:
 
-        if 'MS' in data['product_name'] and not ('Community' in data['product_name']):
+        if 'MS' in data['product_name']:
             send_trial_event_to_MS_amplitude(data)
-            insert_user(data['email'], data['stripe_cust_id'], data['created_at'], data['invite_code'], 'Macro Sentiments')
+            insert_user(data['email'], data['stripe_cust_id'], data['created_at'], data['invite_code'], 'Macro Sentiments', data['product_name'])
         elif 'SF' in data['product_name']:
             insert_user(data['email'], data['stripe_cust_id'], data['created_at'], data['invite_code'],
-                        'Super Forecasters')
-        elif 'Community' in data['product_name']:
-            send_trial_event_to_MS_amplitude(data)
-            insert_user(data['email'], data['stripe_cust_id'], data['created_at'], data['invite_code'],
-                        'MS Community Subscription')
+                        'Super Forecasters', data['product_name'])
 
     return jsonify({'status': 'ok'}), 200
 
