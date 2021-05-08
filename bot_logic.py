@@ -125,6 +125,7 @@ async def on_member_join(member):
             #отправляем запрос в запиер, чтобы добавить в табличку и дать роль
             #если продукт юзера - комьюнити
             if 'Community' in user_data[8]:
+                print("this is community member")
                 url = 'https://hooks.zapier.com/hooks/catch/8089142/byi75p1/'
                 body = {
                     "event_name": "joined_discord",
