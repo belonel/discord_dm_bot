@@ -1,3 +1,4 @@
+import requests
 import discord
 from config import *
 from db_logic import *
@@ -121,6 +122,22 @@ async def on_member_join(member):
             update_customer_description(user_stripe_id, member.display_name + '#' + member.discriminator)
             update_customer_metadata(user_stripe_id, {"discord_nickname": member.display_name,
                                                       "discord_user_id": member.id})
+            #отправляем запрос в запиер, чтобы добавить в табличку и дать роль
+            #если продукт юзера - комьюнити
+            if 'Community' in user_data[8]:
+                url = 'https://hooks.zapier.com/hooks/catch/8089142/byi75p1/'
+                body = {
+                    "event_name": "joined_discord",
+                    "email": user_data[1],
+                    "stripe_cust_id": user_data[2],
+                    "created_at": user_data[3],
+                    "invite_code": user_data[4],
+                    "joined_at": member.joined_at,
+                    "discord_nickname": member.display_name + '#' + member.discriminator,
+                    "discord_id": member.id
+                }
+                x = requests.post(url, json=body)
+
     else:
         # отправляем ивент с user_id = discord_id
         user_id_to_amplitude = member.id
