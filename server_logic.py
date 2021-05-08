@@ -63,6 +63,10 @@ def handle_push():
         elif 'SF' in data['product_name']:
             insert_user(data['email'], data['stripe_cust_id'], data['created_at'], data['invite_code'],
                         'Super Forecasters')
+        elif 'Community' in data['product_name']:
+            send_trial_event_to_MS_amplitude(data)
+            insert_user(data['email'], data['stripe_cust_id'], data['created_at'], data['invite_code'],
+                        'MS Community Subscription')
 
     return jsonify({'status': 'ok'}), 200
 
