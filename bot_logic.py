@@ -17,10 +17,14 @@ invites = {}
 
 users = []
 
-def get_user_data_from_local_by_discord_id_and_guild_name_and_invite_code(discord_id, guild_name, invite_code = None):
+def get_user_data_from_local_by_discord_id_and_guild_name_and_invite_code(discord_id, guild_name, invite_code = None, subs_name = None):
     global users
     found = False
-    my_server_name = 'Macro Sentiments' if 'Macro' in guild_name else 'Super Forecasters'
+    my_server_name = ''
+    if 'Macro' in guild_name:
+        my_server_name = 'Macro Sentiments'
+    elif 'Super' in guild_name:
+        my_server_name = 'Super Forecasters'
 
     for user in users:
         if user[6] == str(discord_id) and user[8] == str(my_server_name) and invite_code != None and user[4] == str(invite_code):
@@ -124,7 +128,7 @@ async def on_member_join(member):
                                                       "discord_user_id": member.id})
             #отправляем запрос в запиер, чтобы добавить в табличку и дать роль
             #если продукт юзера - комьюнити
-            if 'Community' in user_data[8]:
+            if 'Community' in user_data[9]:
                 print("this is community member")
                 url = 'https://hooks.zapier.com/hooks/catch/8089142/byi75p1/'
                 body = {
