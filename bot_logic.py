@@ -133,13 +133,13 @@ async def on_member_join(member):
                 url = 'https://hooks.zapier.com/hooks/catch/8089142/byi75p1/'
                 body = {
                     "event_name": "joined_discord",
-                    "email": user_data[1],
-                    "stripe_cust_id": user_data[2],
-                    "created_at": user_data[3],
-                    "invite_code": user_data[4],
-                    "joined_at": member.joined_at,
+                    "email": str(user_data[1]),
+                    "stripe_cust_id": str(user_data[2]),
+                    "created_at": str(user_data[3]),
+                    "invite_code": str(user_data[4]),
+                    "joined_at": str(member.joined_at),
                     "discord_nickname": member.display_name + '#' + member.discriminator,
-                    "discord_id": member.id
+                    "discord_id": str(member.id)
                 }
                 x = requests.post(url, json=body)
 
