@@ -246,6 +246,22 @@ async def on_message(message):
 
         if user_data != None:
             user_id_to_amplitude = user_email
+
+            if 'Community' in user_data[9]:
+                print("message from community subscriber")
+                url = 'https://hooks.zapier.com/hooks/catch/8089142/byi75p1/'
+                body = {
+                    "event_name": "message",
+                    "email": user_email,
+                    "stripe_cust_id": str(user_data[2]),
+                    "created_at": str(user_data[3]),
+                    "invite_code": str(user_data[4]),
+                    "discord_nickname": message.author.display_name + '#' + message.author.discriminator,
+                    "discord_id": str(message.author.id),
+                    "message_text": str(message.content)
+                }
+                x = requests.post(url, json=body)
+
         else:
             print(f"-?-> I don't know email for user {message.author.display_name} in discord\n")
             user_id_to_amplitude = message.author.id
